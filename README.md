@@ -12,8 +12,24 @@ https://github.com/wonderboy39/pythonic 의 디렉터리가 너무 복잡해지�
  
 
 ### 디렉터리 구조
-- MD : 요약, trobleshoot, 배운내용 및 공부한 내용들 정리하는 디렉터리 
-- projects : 실제 프로젝트 디렉터리들
-  1) scrapper
+- MD : 요약, trobleshoot, 배운내용 및 공부한 내용들 정리하는 디렉터리  
+- projects : 실제 프로젝트 디렉터리들  
+  1) scrapper  
+
+### 지금까지 완료된 기능들
+index, list, modify 페이지 뷰,모델, 템플릿 코드 완성
+index페이지  
+![index](./MD/img/index.png)  
+  
+list페이지
+![list](./MD/img/list.png)  
+  
+edit페이지
+![edit](./MD/img/edit.png)  
+  
+
+
+
+
 
 
