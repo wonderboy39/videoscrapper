@@ -425,10 +425,48 @@ def index(request):
 > ex)  
 > ```html
 > <form action="." method="post">{% csrf_token %}
-> ```
+> ```  
+
+나머지 내용은 내일 정리!!!  
+UpdateView클래스를 상속받아서 View코드를 작성하는 예  
+```python
+class VideoUrlUpdateView(UpdateView):
+    # model = VideoUrl
+    # fields = ['vod_id','subject', 'url', 'description']
+    # success_url = reverse_lazy('sample_app:show_vlist')
+    form_class = VideoForm
+    template_name = 'sample_app/videourl_form.html'
+
+    def get(self, request, pk):
+        # https://tutorial.djangogirls.org/ko/django_forms/#폼-수정하기
+        vod = VideoUrl.objects.get(vod_id=pk)
+        # vod 객체를 form 객체로 변환
+        form = self.form_class(instance=vod)
+        # 직접 생성자를 사용해도 된다
+        # form = VideoForm(instance=vod)
+
+        return render(request, self.template_name, {'form' : form})
+
+    def post(self, request, pk, **kwargs):
+        # 참고자료 : http://ruaa.me/django-view/
+        # 구글 검색어 : generic view post
+        form = self.form_class(request.POST)
+
+        #1) pk값에 해당하는 vod 객체 얻어온다.
+        vod = VideoUrl.objects.get(vod_id = pk)
+
+        #2) vod객체에 POST로 전달받은 form 값을 저장한다.
+        VideoUrl.objects.filter(pk=pk).update(subject=request.POST['subject'], description=request.POST['description'],\
+                                              url = request.POST['url'])
+
+        if form.is_valid():
+            return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
+        return render(request, self.template_name, {'form':form})
+```
   
-
-
+  
+  
+  이 아래부분 지울지 말지 결정!!
 ```html
 <!DOCTYPE html>
 <html lang="en">
