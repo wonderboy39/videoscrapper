@@ -619,15 +619,31 @@ def show_vlist(request):
     return render(request, 'sample_app/show_vlist.html', msg)
 ```  
   
-#### 6.2.4) 글 수정 페이지(modify)작성
-나머지 내용은 내일 정리!!!  
-views.py
-UpdateView클래스를 상속받아서 View코드를 작성하는 예  
+#### 6.2.4) 글 수정 페이지(modify)작성  
+글 수정 페이지에서는 클래스형 뷰를 사용해보기로 했다. 차후 위의 모든 기능들도 클래스형 뷰로 적용할 것이다. 이 글에서는 django에서 웹 개발을 할때 나타나는 여러가지 방식들을 정리해놓고자 기초적인 내용도 담고, 일반적인 않은 것들도 예로 들었다.  
+**sample_app/urls.py**  
+지금까지 작성한 urls.py의 내용은 아래와 같다. urls.py의 내용은 변한 것이 없지만, urls.py의 내용을 확인할때 자꾸 스크롤바를 위아래로 올라갔다가 내려가는 것은 번거로우므로 해당 내용을 이곳에도 옮겨놓았다.  
 ```python
+from sample_app.views import VideoUrlUpdateView, VideoUpdateView
+...
+urlpatterns = [
+    url(r'^index/$', views.index, name='index'),
+    url(r'^write/$', views.write, name='write'),
+    url(r'^write_ok/$', views.write_ok, name='write_ok'),
+    url(r'^show_vlist/$', views.show_vlist, name='show_vlist'),
+    # UpdateView 클래스 사용
+    url(r'^(?P<pk>[0-9]+)/update/$', VideoUrlUpdateView.as_view(), name='update'),
+    # View 클래스 이용
+    url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
+]
+```
+자세히 확인해보면 localhost:8000/sample_app/2/update와 같은 url요청이 발생할 경우 VideoUrlUpdateView.as_view()로 제어권이 넘겨지는 것을 확인할 수 있다. 또한 VideoUrlUpdateView라고 views.py에 정의해놓은 클래스를 사용하기 위해 from sample_app.views 에서 VideoUrlUpdateView를 import하는 것을 확인할 수 있다.  
+  
+**views.py**
+UpdateView클래스를 상속받은 VideoUrlUpdateView
+```python
+# UpdateView 클래스 상속받아 사용하는 방식 ( UpdateView : Form을 자동적으로 사용하는 클래스 )
 class VideoUrlUpdateView(UpdateView):
-    # model = VideoUrl
-    # fields = ['vod_id','subject', 'url', 'description']
-    # success_url = reverse_lazy('sample_app:show_vlist')
     form_class = VideoForm
     template_name = 'sample_app/videourl_form.html'
 
@@ -646,21 +662,29 @@ class VideoUrlUpdateView(UpdateView):
         # 구글 검색어 : generic view post
         form = self.form_class(request.POST)
 
-        #1) pk값에 해당하는 vod 객체 얻어온다.
+        # 1) pk값에 해당하는 vod 객체 얻어온다.
         vod = VideoUrl.objects.get(vod_id = pk)
 
-        #2) vod객체에 POST로 전달받은 form 값을 저장한다.
-        VideoUrl.objects.filter(pk=pk).update(subject=request.POST['subject'], description=request.POST['description'],\
-                                              url = request.POST['url'])
+        # 2) vod객체에 POST로 전달받은 form 값을 저장한다.
+        VideoUrl.objects.filter(pk=pk).update(subject=request.POST['subject'],
+                                              description=request.POST['description'],
+                                              url=request.POST['url'])
 
         if form.is_valid():
             return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
-        return render(request, self.template_name, {'form':form})
+        return render(request, self.template_name, {'form': form})
 ```
+현재 시중에 나와있는 국내 책은 pk를 사용자정의로 지정해서 사용하는 법, form 객체를 템플릿에게 전달해주는 로직에 대해서 적혀있지 않아서 고생을 좀 했다. UpdateView클래스를 상속받으면, if,else로 GET/POST요청을 분기하도록해서 처리하지 않아도 된다. 이러한 방식을 쓰는 것에 대한 장점은 아직 확실하게는 모른다. 차차 공부해가면서 정리하면 될 듯 하다. (if/else문이 불필요하게 존재하는 것은 공동작업시 유지보수성을 떨어뜨린다는 정도밖에는 모른다...)  
   
+**Get 요청처리(글 수정 페이지)**  
+get(self, request, pk)는 localhost:8000/sample_app/show_vlist에서 Edit버튼에 대한 get요청이다. localhost:8000/sample_app/show_vlist에서 Edit버튼 클릭시 pk값을 get요청에 실어서 VideoUrlUpdateView의 get()으로 전달해준다. 그리고 이에 대한 응답으로 VideoUrlUpdateView의 get()메서드에서는  
+- pk값에 대해서 모델데이터(vod)를 얻어오고  
+- 얻어온 모델데이터(vod)를 인자로 하여 VideoForm이 form 객체를 생성하도록 한다.  
+- 이후 얻어낸 form객체 인스턴스를 render()함수를 통해 template를 렌더링한다.  
   
-  
-  이 아래부분 지울지 말지 결정!!
+**Post 요청처리(글 저장 페이지)**  
+
+이 아래부분 지울지 말지 결정!!
 ```html
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1-strict.dtd">
 <html lang="ko">

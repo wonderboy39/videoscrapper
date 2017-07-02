@@ -38,10 +38,11 @@ def show_vlist(request):
     msg = {'video_list': video_list}
     return render(request, 'sample_app/show_vlist.html', msg)
 
+
 def modify(request):
     if request.method == 'GET':
         vod = VideoUrl.objects.get(vod_id=request.GET['vod_id'])
-        return render(request, 'sample_app/modify.html', {'vod':vod})
+        return render(request, 'sample_app/modify.html', {'vod': vod})
     elif request.method == 'POST':
         # 참고 URL : https://docs.djangoproject.com/en/1.11/topics/forms/modelforms/#the-save-method
         # 1) Form 클래스로 구현
@@ -59,6 +60,7 @@ def modify(request):
         # form데이터를 실어서 modify.html로 전송
         return render(request, 'sample_app/modify.html',ctx)
 
+
 def modify_ok(request):
     if request.method=='POST':
         # 단순 저장이 아닌 update구문으로 변경할 것
@@ -72,11 +74,9 @@ def modify_ok(request):
             return render(request, 'sample_app/show_vlist.html', {'form' : form })
     return render(request, 'sample_app/show_vlist.html')
 
+
 # UpdateView 클래스 상속받아 사용하는 방식 ( UpdateView : Form을 자동적으로 사용하는 클래스 )
 class VideoUrlUpdateView(UpdateView):
-    # model = VideoUrl
-    # fields = ['vod_id','subject', 'url', 'description']
-    # success_url = reverse_lazy('sample_app:show_vlist')
     form_class = VideoForm
     template_name = 'sample_app/videourl_form.html'
 
@@ -95,22 +95,25 @@ class VideoUrlUpdateView(UpdateView):
         # 구글 검색어 : generic view post
         form = self.form_class(request.POST)
 
-        #1) pk값에 해당하는 vod 객체 얻어온다.
+        # 1) pk값에 해당하는 vod 객체 얻어온다.
         vod = VideoUrl.objects.get(vod_id = pk)
 
-        #2) vod객체에 POST로 전달받은 form 값을 저장한다.
-        VideoUrl.objects.filter(pk=pk).update(subject=request.POST['subject'], description=request.POST['description'],\
-                                              url = request.POST['url'])
+        # 2) vod객체에 POST로 전달받은 form 값을 저장한다.
+        VideoUrl.objects.filter(pk=pk).update(subject=request.POST['subject'],
+                                              description=request.POST['description'],
+                                              url=request.POST['url'])
 
         if form.is_valid():
             return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
-        return render(request, self.template_name, {'form':form})
+        return render(request, self.template_name, {'form': form})
+
 
 # ModelForm 사용하는 방식
 class VideoUpdateView(View):
     form_class = VideoForm
     template_name = 'sample_app/videourl_form.html'
     initial = {'key':'value'}
+
     def get(self, request, pk):
         print('vodid :: ' + pk)
         vod = VideoUrl.objects.get(vod_id=pk)
