@@ -1,8 +1,8 @@
 # Video scrapping APP (youtube, vimeo, etc)
 ### 설명
-https://github.com/wonderboy39/pythonic 의 디렉터리가 너무 복잡해지기도 했고, 만들려는 APP의 구현 목표가 뚜렷해져서 이곳으로 따로 리포지터리 개설
-https://github.com/wonderboy39/videoscrapper/blob/master/MD/basic-flow.md
- : 초기버전 작성시 공부했던 내용들, 스터디원들이 빠르게 django를 익힐 수 있도록 정리해둔 내용들
+https://github.com/wonderboy39/pythonic 의 디렉터리가 너무 복잡해지기도 했고, 만들려는 APP의 구현 목표가 뚜렷해져서 이곳으로 따로 리포지터리 개설  
+https://github.com/wonderboy39/videoscrapper/blob/master/MD/basic-flow.md  
+ : 초기버전 작성시 공부했던 내용들, 스터디원들이 빠르게 django를 익힐 수 있도록 정리해둔 내용들  
   
 ### 브랜치 계획
 (hotfix, front, back, md) -> development -> master  
