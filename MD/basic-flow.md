@@ -364,17 +364,22 @@ from django.conf.urls import url
 from sample_app import views
 
 urlpatterns = [
-    #url(r'^sample_app/', include('smaple_app.urls', namespace="sample_app")),
-    #url(r'^P<videourl_id>\d+/$', views.)
     url(r'^index/$', views.index, name='index'),
     url(r'^write/$', views.write, name='write'),
     url(r'^write_ok/$', views.write_ok, name='write_ok'),
-    url(r'^list/$', views.list, name='list'),
+    url(r'^show_vlist/$', views.show_vlist, name='show_vlist'),
+    url(r'^modify/$', views.modify, name='modify'),
+    url(r'^modify_ok/$', views.modify_ok, name='modify_ok'),
+    # UpdateView 클래스 사용
+    url(r'^(?P<pk>[0-9]+)/update/$', VideoUrlUpdateView.as_view(), name='update'),
+    # View 클래스 이용
+    url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
 ]
 ```
-
+  
 #### 6.2) 뷰 함수, 템플릿 작성
-#### 6.2.1) views.py에 템플릿(HTML)파일을 지정해주는 함수 호출로직(render()) 구현  
+#### 6.2.1) index페이지 처리
+**views.py에 index.html에 대한 요청을 처리하는 로직 구현**
 **sample_app/views.py 수정**  
 ```python
 # -*- coding: utf-8 -*-
@@ -385,49 +390,238 @@ from sample_app.models import VideoUrl, VideoCategory
 
 # Create your views here.
 def index(request):
-    context = {'videourls' : 'helloworld'}
+    context = {'videourls' : 'helloworld'} # just sample data
     return render(request, 'sample_app/index.html', context)
 ```
-
-#### 6.2.2) HTML(템플릿 언어 이용) 파일 작성
-#### 주의점 ) 템플릿 언어 사용시 templates디렉터리를 따로 생성해야 한다.
+  
+**views.py에서 지정한 index.html코드 작성**  
+**주의점) 템플릿 언어 사용시 templates디렉터리를 따로 생성해야 한다.**  
 한가지 주의해야 할 점은 어플리케이션 디렉터리 내에 html파일내부에서 템플릿언어를 사용할 경우 '[어플리케이션 디렉터리 명]/templates/[어플리케이션 디렉터리 명]/xxxx.html과 같은 경로에 html파일을 위치시켜야 한다. 순서를 간단히 요약해보면 아래와 같다.  
 1. 어플리케이션 디렉터리 내에 templates라는 디렉터리를 생성한다.
 2. 생성한 templates디렉터리 내부에 '어플리케이션 명' 디렉터리를 생성한다.
-3. 최종적으로 생성된 디렉터리 내부에 html을 위치시킨다.
+3. 최종적으로 생성된 디렉터리 내부에 html을 위치시킨다.  
   
-**index.html**  
 **$ mkdir sample_app/templates**  
 **$ mkdir sample_app/templates/sample_app/**  
 **$ vim sample_app/templates/sample_app/index.html**  
+$ vim sample_app/templates/sample_app/index.html  
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>
-    Welcome, YOUTUBE urls scrapping
-    </title>
-</head>
-<body>
-    <ul>
-        <li><a href="/sample_app/write/">+Add URL</a></li>
-        <li><a href="/sample_app/list/">Show list</a></li>
-    </ul>
-</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1-strict.dtd">
+<html lang="ko">
+    <head> 
+        <title> WELCOME </title>
+        <!-- 합쳐지고 최소화된 최신 CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        
+        <!-- 부가적인 테마 -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+        
+        <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    </head>
+    
+    <body>
+        <div class="header container" style="width:400px; padding:15px">
+            <h1> Youtube Scrap APP </h1>
+        </div>
+        <div class="list-group container" style="width:400px;padding:15px;">
+            <a href="/sample_app/write/" class="list-group-item active"> +add URLs</a>
+            <a href="/sample_app/show_vlist/" class="list-group-item"> show list
+{#                <span class="badge">14</span>#}
+            </a>
+        </div>
+    </body>
 </html>
 ```
-**write.html**  
-**$ vim sample_app/templates/sample_app/write.html**  
-> 주의!!) **csrf_token**   
+  
+index페이지에 대한 urlpattern, views.py, html파일을 추가한 것에 대한 결과는 아래와 같다.  
+![index페이지](./img/index_1.png)
+
+#### 6.2.2) 글쓰기 페이지(write.html), 글 저장(DB에 저장명령)페이지 작성
+위에서 urlpatterns에 대한 처리는 아래와 같이 작성했었다. localhost:8000/sample_app/write에 대한 페이지는 views.py의 write(request)함수와 매칭된다.
+```python
+urlpatterns = [
+    url(r'^index/$', views.index, name='index'),
+    url(r'^write/$', views.write, name='write'),
+    url(r'^write_ok/$', views.write_ok, name='write_ok'),
+    url(r'^show_vlist/$', views.show_vlist, name='show_vlist'),
+    url(r'^modify/$', views.modify, name='modify'),
+    url(r'^modify_ok/$', views.modify_ok, name='modify_ok'),
+    # UpdateView 클래스 사용
+    url(r'^(?P<pk>[0-9]+)/update/$', VideoUrlUpdateView.as_view(), name='update'),
+    # View 클래스 이용
+    url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
+]
+```
+  
+**write.html 작성**  
+sample_app/views.py에서 write(request)함수에서 GET, POST로 케이스를 나누어 처리할 수도 있는데 다양한 방식으로 해보고 싶어서 django에서 통용적으로 쓰는 방식으로 만들지 않고 jsp, mybatis를 사용할때의 로직으로 작성해봤다. 글쓰기 기능은  
+- write(request) at views.py : 글쓰기 페이지 (write.html)  
+- write_ok(request) at views.py : DB transaction 처리 페이지 (write_ok.html)  
+  
+굳이 이렇게 나눈 이유는 기술적인 이유는 쓴 글이 서버에 저장되는 것이 성공적으로 되었을때 write_ok.html에서 그 결과를 보여주는 등의 방식을 만들어보고 싶었고, 그 외의 이유는 그냥 이렇게 해도 된다는 것을 확인해보고 싶었다. jsp, spring을 주로 사용하던 내 친구들이 이 글을 보고 조금이나마 감을 잡아보라는 의미에서 샘플로 만들어보았다.(jsp등에서는 write_ok.jsp와 같은 페이지에서 글쓰기가 완료되었는지 결과를 보여주는 페이지를 작성한다.) 다음 글에서 이 부분을 GET/POST에 따라서 rendering을 다르게 처리하도록 하고자 한다.  
+  
+> 주의!!) **csrf_token**  
 > 주의해야 할 점은 POST방식의 form을 사용하는 템플릿 코드에서는 **CSRF(Cross Site Request Forgery 공격)** 을 방지하기 위해 **{% csrf_token %}**을 사용해야 한다. 폼 데이터에는 악의적인 스크립트 문장이 들어있을 수도 있기 때문이다.  
 > 위치는 `<form>`앨리먼트의 첫 줄 다음에 넣어주면 된다. 이 태그를 사용하면 장고는 내부적으로 CSRF토큰 값의 유효성을 검증한다. 만일 CSRF토큰값 검증에 실패하면 사용자에게 403에러를 보여준다. 한 가지 주의할 점은 CSRF토큰 값이 유출될 수 있으므로 외부 URL로 보내는 `<form>` 에는 사용하지 않도록 한다.
 > ex)  
 > ```html
 > <form action="." method="post">{% csrf_token %}
 > ```  
+  
+**$ vim sample_app/templates/sample_app/write.html**  
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>
+	Welcome, YOUTUBE urls scrapping        
+    </title>
+</head>
+<body>
+  <form action="{% url 'sample_app:write_ok'%}" method="post">{% csrf_token %}
+  <table>
+    <tr>
+      <td><p>title : </p></td>
+      <td><input type="text" name="subject"/></td>
+    </tr>
+    <tr>
+      <td><p>url : </p></td>
+      <td><input type="text" name="url"/></td>
+    </tr>
+    <tr>
+      <td><p>description : </p></td>
+      <td><input type="text" name="description"/></td>
+    </tr>
+    <tr>
+      <td><input type="hidden" name="category" value="Videos"/></td>
+      <td colspan="2"><input type="submit" name="저장" /></td>
+    </tr>
+  </table>
+  </form>
+</body>
+</html>
 
+```  
+위 페이지에 대한 결과는 아래와 같다. 아직은 아무 디자인도 적용하지 않은 페이지여서 부트스트랩을 적용하지 않아 뭔가 지저분해 보인다. 차후 글쓰기 페이지에 부트스트랩을 적용하는 과정, css를 상속하는 과정, form태그에 부트스트랩을 적용하는 과정 등은 다음글에서 글쓰기 기능을 리팩토링 하는 과정을 예로 들어가면서 정리하고자 한다.  
+![실행결과](./img/write_1.png)
+  
+**sample_app/views.py에 write, write_ok 관련 코드 작성**  
+write.html에서 form에 모든 데이터를 작성한후 서버에 데이터 처리를 요청하는 주소는 localhost:8000/sample_app/write_ok이다. 여기에 맞춰서 write(request), write_ok(request)를 작성해본 내용은 아래와 같다.  
+```python
+from django.urls import reverse
+...
+def write(request):
+    return render(request, 'sample_app/write.html',{'test':'test'} )
+
+
+def write_ok(request):
+    m_subject = request.POST['subject']
+    m_url = request.POST['url']
+    m_description = request.POST['description']
+
+    v = VideoUrl( subject=m_subject, url=m_url, description=m_description )
+    v.save()
+    return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
+```  
+- write페이지에 대한 요청 : write.html을 렌더링하도록 작성했다.  
+- write.html페이지에서 '질의 보내기'버튼을 눌렀을 때 : 'localhost:8000/sample_app/write_ok' url을 요청하도록 작성했다. 이 url요청에 대해서는 views.py의 write_ok(request)를 찾아가도록 되어있다.  
+- write_ok(request)에서 Data의 저장이 정상적으로 완료된 후 : views.py의 write_ok(request)가 'localhost:8000/sample_app/show_vlist'로 리다이렉팅 되도록 코드를 작성했다.  
+
+#### 6.2.3) 글 목록 페이지(show_vlist)작성
+**urls.py**
+```python
+urlpatterns = [
+    url(r'^index/$', views.index, name='index'),
+    url(r'^write/$', views.write, name='write'),
+    url(r'^write_ok/$', views.write_ok, name='write_ok'),
+    url(r'^show_vlist/$', views.show_vlist, name='show_vlist'),
+    url(r'^modify/$', views.modify, name='modify'),
+    url(r'^modify_ok/$', views.modify_ok, name='modify_ok'),
+    # UpdateView 클래스 사용
+    url(r'^(?P<pk>[0-9]+)/update/$', VideoUrlUpdateView.as_view(), name='update'),
+    # View 클래스 이용
+    url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
+]
+```
+localhost:8000/sample_app/show_vlist에 대한 요청은 views.py의 show_vlist(request)함수에서  처리하도록 urls.py를 작성했다.  
+  
+**show_vlist.html작성**  
+show_vlist.html페이지에는 부분적으로 부트스트랩을 적용했다. 추후 부트스트랩을 상속하는 것에 대한 내용을 정리해보도록 해야 할 듯하다. 이번 글에서 이 내용까지 다루기에는 체력이 부족하므로...  
+```html
+<html>
+ <head>
+   <title>show list of videos</title>
+     <!-- 합쳐지고 최소화된 최신 CSS -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+     <!-- 부가적인 테마 -->
+     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+     <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+
+     <style>
+            .subject{
+                font-size: 2em;
+                text-align: center;
+            }
+            .edit{
+                float: right;
+{#                height: 20%;#}
+                vertical-align: center;
+            }
+            .empty{
+                margin:2px;
+            }
+        </style>
+ </head>
+ <body>
+    <div class="container-fluid panel panenl-default" style="width:400px; padding:15px">
+        <div class="title">
+            <span class="subject"> <b>Video List</b> </span>
+            <a href="/sample_app/index/" class="btn btn-default edit" role="button" > Go Home </a>
+        </div>
+    </div>
+    <div class="empty">
+        <hr/>
+    </div>
+    <div class="container">
+        <div class="row">
+            {% for vod in video_list %}
+                <div class="col-sm-6 col-md-4 panel panel-default">
+                    <div class="thumbnail embed-responsive embed-responsive-16by9" width="330" height="220">
+<!--                    <div class="thumbnail">-->
+<!--                        <img src="..." alt="...">-->
+                        <iframe width="310" height="200" src="{{ vod.url }}" frameborder="0" class="media-object"></iframe>
+                    </div>
+                    <div class="caption">
+                        <h3> {{ vod.subject }} </h3>
+                        <p> {{ vod.description }} </p>
+                        <p>
+                            <a href="{% url 'sample_app:update' vod.vod_id %}" class="btn btn-default" role="button">Edit</a>
+                        </p>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+ </body>
+ {# modify하는 html로 넘어가는 버튼 기능 구현, url설계, modify()함수를 views.py에 구현 #}
+</html>
+```
+**views.py의 show_vlist(request)작성**  
+show_vlist에서는 DB(Sqlite3)에서 데이터를 모두 얻어온후 이를 json형식으로 담어서 show_vlist.html을 렌더링하는 함수에 데이터를 함께 실어서 보낸다.  
+```python
+...
+def show_vlist(request):
+    video_list = VideoUrl.objects.all()
+    msg = {'video_list': video_list}
+    return render(request, 'sample_app/show_vlist.html', msg)
+```  
+  
+#### 6.2.4) 글 수정 페이지(modify)작성
 나머지 내용은 내일 정리!!!  
+views.py
 UpdateView클래스를 상속받아서 View코드를 작성하는 예  
 ```python
 class VideoUrlUpdateView(UpdateView):
@@ -468,21 +662,31 @@ class VideoUrlUpdateView(UpdateView):
   
   이 아래부분 지울지 말지 결정!!
 ```html
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>
-    Welcome, YOUTUBE urls scrapping
-    </title>
-</head>
-<body>
-  <form action="{% url 'sample_app:write_ok'%}" method="post">{% csrf_token %}
-    <input type="text" name="subject"/>
-    <input type="text" name="url"/>
-    <input type="submit" name="저장" />
-  </form>
-</body>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1-strict.dtd">
+<html lang="ko">
+    <head> 
+        <title> WELCOME </title>
+        <!-- 합쳐지고 최소화된 최신 CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap.min.css">
+        
+        <!-- 부가적인 테마 -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/css/bootstrap-theme.min.css">
+        
+        <!-- 합쳐지고 최소화된 최신 자바스크립트 -->
+        <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.2/js/bootstrap.min.js"></script>
+    </head>
+    
+    <body>
+        <div class="header container" style="width:400px; padding:15px">
+            <h1> Youtube Scrap APP </h1>
+        </div>
+        <div class="list-group container" style="width:400px;padding:15px;">
+            <a href="/sample_app/write/" class="list-group-item active"> +add URLs</a>
+            <a href="/sample_app/show_vlist/" class="list-group-item"> show list
+{#                <span class="badge">14</span>#}
+            </a>
+        </div>
+    </body>
 </html>
 ```
 **write_ok함수**  
