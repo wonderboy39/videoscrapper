@@ -36,7 +36,7 @@ $ mv basic_prj helloworld
 어플리케이션 생성시에는 프로젝트 디렉터리내에 생성된 manage.py를 이용한다. 프로젝트 생성시에는 django-admin.py를 이용해 프로젝트를 생성한 것과 구별해서 기억하자.  
 
 > **django-admin.py 가 자동완성되는 이유?**  
-*python,django 설치 시 전역 path에 지정된 python디렉터리에 의해 django-admin.py가 자동완성된다-이부분 차후 다시 정리(시간이 부족하다)*
+> *python,django 설치 시 전역 path에 지정된 python디렉터리에 의해 django-admin.py가 자동완성된다-이부분 차후 다시 정리(시간이 부족하다)*
 
 ```bash
 $ cd helloworld
@@ -119,22 +119,22 @@ youtube의 동영상 링크들을 저장하는 어플리케이션을 아주 기�
 SQLite3를 사용해서 DB테이블구성을 진행할때 굳이 SQL을 사용해 테이블을 미리 생성하지 않아도 된다. 하지만 MariaDB/MySql/PostgreSql사용시에는 테이블을 생성해주어야 하는 것으로 보인다.  
 SQLite를 사용해 구성할 경우를 먼저 정리하고 그 후에 MariaDB/Mysql을 사용할 경우를 정리해보고자 한다.  
 #### VideoUrl (테이블 명세)
- |컬럼 | 타입 | 제약조건 | 용도 |
- |:---|:---:|:------:|----:|
- | id | integer    | Not Null   | Primary Key|
- | subject | varchar(50)    | Not Null   | 동영상 제목 |
- | url | varchar(100)    | Not Null   | url  |
- | pub_date | datetime    | Not Null   | 등록날짜 |  
- 
+| 컬럼       |      타입      |   제약조건   |          용도 |
+| :------- | :----------: | :------: | ----------: |
+| id       |   integer    | Not Null | Primary Key |
+| subject  | varchar(50)  | Not Null |      동영상 제목 |
+| url      | varchar(100) | Not Null |         url |
+| pub_date |   datetime   | Not Null |        등록날짜 |
+
 *pub_date항목은 추후 기능 추가를 통해 추가하고자 한다. 이 글을 쓰는 목적자체가 정말 단순무식한 골격의 프로젝트 작성절차를 정리하는 것이 목적이기 때문에 해당 내용은 basic-flow3.md에 정리할 예정이다.*
 
 #### VideoCategory (테이블 명세)
- |컬럼 | 타입 | 제약조건 | 용도 |
- |:---|:---:|:------:|----:|
- | id | integer    | Not Null   | Primary Key |
- | category | varchar(20)    | Not Null   | Foreign Key |
- | pub_date | datetime    | Not Null   | 등록날짜  |  
- 
+| 컬럼       |     타입      |   제약조건   |          용도 |
+| :------- | :---------: | :------: | ----------: |
+| id       |   integer   | Not Null | Primary Key |
+| category | varchar(20) | Not Null | Foreign Key |
+| pub_date |  datetime   | Not Null |        등록날짜 |
+
 *pub_date항목은 추후 기능 추가를 통해 추가하고자 한다. 이 글을 쓰는 목적자체가 정말 단순무식한 골격의 프로젝트 작성절차를 정리하는 것이 목적이기 때문에 해당 내용은 basic-flow3.md에 정리할 예정이다.*
 ### 3) 페이지 이동 flow - 추후 다시 정리
 ### 4) 모델설계, 구현 및 코딩
@@ -186,23 +186,23 @@ TIME_ZONE = 'Asia/Seoul'
 #### 4.2) 모델 설계
 이번 글에서는 별도의 카테고리 설정 없이 url을 등록하는 부분까지만 정리할 것이다. 카테고리 기능까지 추가하려면 글이 길어지기 때문에 추후에 basic-flow2.md파일에서 정리하고자 한다. 여기서는 카테고리, 비디오 테이블 모두의 테이블명세를 모두 설계해서 문서로 남겼다. (basic-flow2.md파일에서도 다시 정리할 예정)
 #### 4.2.1) VideoCategory 테이블의 각 컬럼과 VideoCategory클래스 각 변수간 매핑
- |컬럼 | 타입 | 클래스의 멤버필드 | django내장 클래스(ORM) |
- |:---|:---:|:------:|----:|
- | id | integer    | videocategory_id   | PK는 django에서 자동 생성 |
- | category | varchar(20)    | category   | models.CharField(max_length=20) |
- | pub_date | datetime    | pub_date   | models.DateTimeField('date  published') |  
- 
+| 컬럼       |     타입      |    클래스의 멤버필드     |                       django내장 클래스(ORM) |
+| :------- | :---------: | :--------------: | --------------------------------------: |
+| id       |   integer   | videocategory_id |                      PK는 django에서 자동 생성 |
+| category | varchar(20) |     category     |         models.CharField(max_length=20) |
+| pub_date |  datetime   |     pub_date     | models.DateTimeField('date  published') |
+
 *pub_date항목은 추후 기능 추가를 통해 추가하고자 한다. 이 글을 쓰는 목적자체가 정말 단순무식한 골격의 프로젝트 작성절차를 정리하는 것이 목적이기 때문에 해당 내용은 basic-flow3.md에 정리할 예정이다.*
 #### 4.2.2) VideoUrl 테이블의 각 컬럼과 VideoUrl클래스 각 변수간 매핑
- |컬럼 | 타입 | 클래스의 멤버필드 | django내장 클래스(ORM) |
- |:---|:---:|:------:|----:|
- | id | integer    | videourl_id   | PK는 django에서 자동 생성 |
- | category | varchar(20)    | category   | models.ForeignKey(VideoCategory) |
- | subject | varchar(50)    | subject   | models.CharField(max_length=50) |
- | url | varchar(100)    | url   | models.CharField(max_length=100)  |
- | description | varchar(400)    | url   | models.CharField(max_length=400)  |
- | pub_date | datetime    | pub_date   | models.DateTimeField('date  published') |  
- 
+| 컬럼          |      타입      |  클래스의 멤버필드  |                       django내장 클래스(ORM) |
+| :---------- | :----------: | :---------: | --------------------------------------: |
+| id          |   integer    | videourl_id |                      PK는 django에서 자동 생성 |
+| category    | varchar(20)  |  category   |        models.ForeignKey(VideoCategory) |
+| subject     | varchar(50)  |   subject   |         models.CharField(max_length=50) |
+| url         | varchar(100) |     url     |        models.CharField(max_length=100) |
+| description | varchar(400) |     url     |        models.CharField(max_length=400) |
+| pub_date    |   datetime   |  pub_date   | models.DateTimeField('date  published') |
+
 *pub_date항목은 추후 기능 추가를 통해 추가하고자 한다. 이 글을 쓰는 목적자체가 정말 단순무식한 골격의 프로젝트 작성절차를 정리하는 것이 목적이기 때문에 해당 내용은 basic-flow3.md에 정리할 예정이다.*
 > **PK** : 클래스에 지정해주지 않아도 장고는 항상 PK에 대한 속성을 Not Null 및 Auto Increment로 지정해준다. 변수의 이름은 테이블명의 소문자를 접두어로 해서 자동으로 만들어준다.  
 > **DateTimeField** : date_published는 pub_date컬럼에 대한 레이블 문구다.  
@@ -279,7 +279,7 @@ Operations to perform:
 Running migrations:
   Applying sample_app.0001_initial... OK
 ```
-  
+
 ### 6) 어플리케이션 기능 개발 - View, Template 구현
 #### 이번 글에서의 구현 목표
 이번 글에서는 youtube scrap기능의 vol0.0.1버전을 구현하고자 한다. vol0.0.1버전에서 구현하고자 하는 구현명세는 아래와 같다.  
@@ -294,7 +294,7 @@ Running migrations:
 > **6.1) URLConf 설계,수정/구현**  
 > : 6.1.1) URLConf설계  
 > : 6.1.2) URLConf의 내용 수정 (urls.py의 urlpatterns내용 수정)  
->  
+>
 > **6.2) 뷰 함수, 템플릿 작성**  
 > : 6.2.1) views.py에 템플릿(HTML)파일을 지정해주는 함수 호출로직(render()) 구현  
 > : 6.2.2) HTML(템플릿 언어 이용) 파일 작성  
@@ -302,14 +302,14 @@ Running migrations:
 #### 6.1) URLConf 설계,수정/구현
 #### 6.1.1) URLConf 설계
 작성하고자 하는 페이지가 3개이므로 3개의 페이지를 처리하기 위한 뷰와 템플릿을 구현해야 한다. 각 HTML(장고 템플릿 적용)파일과 URL, 뷰함수를 나열해보면 아래와 같다.  
-  
- |URL    | 뷰    | 해당 뷰 함수의 역할   |
- | :- | :-: | -: |
- | /sample_app/index/   |  index()  |  index.html 템플릿 렌더링 |  
- | /sample_app/write/   |  write()  |  write.html 템플릿을 렌더링 |  
- | /sample_app/write_ok/   |  write_ok()  |  write.html 에서 넘겨 받은 폼을 POST방식으로 처리 |  
- | /smaple_app/list/    |  list()   |  list.html 템플릿을 렌더링 |  
- 
+
+| URL                   |     뷰      |                        해당 뷰 함수의 역할 |
+| :-------------------- | :--------: | ---------------------------------: |
+| /sample_app/index/    |  index()   |                 index.html 템플릿 렌더링 |
+| /sample_app/write/    |  write()   |                write.html 템플릿을 렌더링 |
+| /sample_app/write_ok/ | write_ok() | write.html 에서 넘겨 받은 폼을 POST방식으로 처리 |
+| /smaple_app/list/     |   list()   |                 list.html 템플릿을 렌더링 |
+
 위와 같이 view의 함수의 동작과 url을 매핑해놓은 것을 URLConf라고 부른다.  
 #### 6.1.2) URLConf 수정/구현
 **INDEX**  
@@ -329,17 +329,17 @@ URLConf를 수정할 때 보통 urls.py의 urlpatterns 라는 리스트에 해�
 #### 정규표현식
 URLConf를 수정하기 위해 urls.py의 url함수를 수정할때 자주 사용되는 정규표현식은 아래와 같다.  
 자주 사용되는 것들만을 여기서 정리하기로 하고 그 외에 다른 표현식들은 따로 url_regex.md파일에 정리하고자 한다.  
-  
-|  표현식  |  의미  |  
- | :-: | :-: |  
- | . (Dot)   |  모든 문자 하나 |  
- | ^ (Caret)  |  문자열의 시작 |  
- | $  |  문자열의 끝 |  
- | +  |  1번이상 반복, {1,}와 동일 |  
- | ?  |  0번 또는 1번 반복, {0,1}과 동일 |  
- | \W |  영문, 숫자 또는 밑줄 한개, [0-9a-zA-Z_]와 동일 |  
- | \d |  숫자 한개, [0-9]와 동일 |  
-  
+
+|    표현식    |                의미                 |
+| :-------: | :-------------------------------: |
+|  . (Dot)  |             모든 문자 하나              |
+| ^ (Caret) |              문자열의 시작              |
+|     $     |              문자열의 끝               |
+|     +     |         1번이상 반복, {1,}와 동일         |
+|     ?     |      0번 또는 1번 반복, {0,1}과 동일       |
+|    \W     | 영문, 숫자 또는 밑줄 한개, [0-9a-zA-Z_]와 동일 |
+|    \d     |         숫자 한개, [0-9]와 동일          |
+
 #### urls.py 수정
 1) basic_prj/urls.py의 urlpatterns에 namespace 추가  
 2) sample_app/urls.py의 urlpatterns에 사용하고자 하는 url추가  
@@ -376,7 +376,7 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
 ]
 ```
-  
+
 #### 6.2) 뷰 함수, 템플릿 작성
 #### 6.2.1) index페이지 처리
 **views.py에 index.html에 대한 요청을 처리하는 로직 구현**
@@ -393,14 +393,14 @@ def index(request):
     context = {'videourls' : 'helloworld'} # just sample data
     return render(request, 'sample_app/index.html', context)
 ```
-  
+
 **views.py에서 지정한 index.html코드 작성**  
 **주의점) 템플릿 언어 사용시 templates디렉터리를 따로 생성해야 한다.**  
 한가지 주의해야 할 점은 어플리케이션 디렉터리 내에 html파일내부에서 템플릿언어를 사용할 경우 '[어플리케이션 디렉터리 명]/templates/[어플리케이션 디렉터리 명]/xxxx.html과 같은 경로에 html파일을 위치시켜야 한다. 순서를 간단히 요약해보면 아래와 같다.  
 1. 어플리케이션 디렉터리 내에 templates라는 디렉터리를 생성한다.
 2. 생성한 templates디렉터리 내부에 '어플리케이션 명' 디렉터리를 생성한다.
 3. 최종적으로 생성된 디렉터리 내부에 html을 위치시킨다.  
-  
+
 **$ mkdir sample_app/templates**  
 **$ mkdir sample_app/templates/sample_app/**  
 **$ vim sample_app/templates/sample_app/index.html**  
@@ -433,7 +433,7 @@ $ vim sample_app/templates/sample_app/index.html
     </body>
 </html>
 ```
-  
+
 index페이지에 대한 urlpattern, views.py, html파일을 추가한 것에 대한 결과는 아래와 같다.  
 ![index페이지](./img/index_1.png)
 
@@ -453,22 +453,22 @@ urlpatterns = [
     url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
 ]
 ```
-  
+
 **write.html 작성**  
 sample_app/views.py에서 write(request)함수에서 GET, POST로 케이스를 나누어 처리할 수도 있는데 다양한 방식으로 해보고 싶어서 django에서 통용적으로 쓰는 방식으로 만들지 않고 jsp, mybatis를 사용할때의 로직으로 작성해봤다. 글쓰기 기능은  
 - write(request) at views.py : 글쓰기 페이지 (write.html)  
 - write_ok(request) at views.py : DB transaction 처리 페이지 (write_ok.html)  
-  
+
 굳이 이렇게 나눈 이유는 기술적인 이유는 쓴 글이 서버에 저장되는 것이 성공적으로 되었을때 write_ok.html에서 그 결과를 보여주는 등의 방식을 만들어보고 싶었고, 그 외의 이유는 그냥 이렇게 해도 된다는 것을 확인해보고 싶었다. jsp, spring을 주로 사용하던 내 친구들이 이 글을 보고 조금이나마 감을 잡아보라는 의미에서 샘플로 만들어보았다.(jsp등에서는 write_ok.jsp와 같은 페이지에서 글쓰기가 완료되었는지 결과를 보여주는 페이지를 작성한다.) 다음 글에서 이 부분을 GET/POST에 따라서 rendering을 다르게 처리하도록 하고자 한다.  
-  
+
 > 주의!!) **csrf_token**  
 > 주의해야 할 점은 POST방식의 form을 사용하는 템플릿 코드에서는 **CSRF(Cross Site Request Forgery 공격)** 을 방지하기 위해 **{% csrf_token %}**을 사용해야 한다. 폼 데이터에는 악의적인 스크립트 문장이 들어있을 수도 있기 때문이다.  
 > 위치는 `<form>`앨리먼트의 첫 줄 다음에 넣어주면 된다. 이 태그를 사용하면 장고는 내부적으로 CSRF토큰 값의 유효성을 검증한다. 만일 CSRF토큰값 검증에 실패하면 사용자에게 403에러를 보여준다. 한 가지 주의할 점은 CSRF토큰 값이 유출될 수 있으므로 외부 URL로 보내는 `<form>` 에는 사용하지 않도록 한다.
 > ex)  
 > ```html
 > <form action="." method="post">{% csrf_token %}
-> ```  
-  
+> ```
+
 **$ vim sample_app/templates/sample_app/write.html**  
 ```html
 <!DOCTYPE html>
@@ -503,10 +503,10 @@ sample_app/views.py에서 write(request)함수에서 GET, POST로 케이스를 �
 </body>
 </html>
 
-```  
+```
 위 페이지에 대한 결과는 아래와 같다. 아직은 아무 디자인도 적용하지 않은 페이지여서 부트스트랩을 적용하지 않아 뭔가 지저분해 보인다. 차후 글쓰기 페이지에 부트스트랩을 적용하는 과정, css를 상속하는 과정, form태그에 부트스트랩을 적용하는 과정 등은 다음글에서 글쓰기 기능을 리팩토링 하는 과정을 예로 들어가면서 정리하고자 한다.  
 ![실행결과](./img/write_1.png)
-  
+
 **sample_app/views.py에 write, write_ok 관련 코드 작성**  
 write.html에서 form에 모든 데이터를 작성한후 서버에 데이터 처리를 요청하는 주소는 localhost:8000/sample_app/write_ok이다. 여기에 맞춰서 write(request), write_ok(request)를 작성해본 내용은 아래와 같다.  
 ```python
@@ -524,7 +524,7 @@ def write_ok(request):
     v = VideoUrl( subject=m_subject, url=m_url, description=m_description )
     v.save()
     return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
-```  
+```
 - write페이지에 대한 요청 : write.html을 렌더링하도록 작성했다.  
 - write.html페이지에서 '질의 보내기'버튼을 눌렀을 때 : 'localhost:8000/sample_app/write_ok' url을 요청하도록 작성했다. 이 url요청에 대해서는 views.py의 write_ok(request)를 찾아가도록 되어있다.  
 - write_ok(request)에서 Data의 저장이 정상적으로 완료된 후 : views.py의 write_ok(request)가 'localhost:8000/sample_app/show_vlist'로 리다이렉팅 되도록 코드를 작성했다.  
@@ -546,7 +546,7 @@ urlpatterns = [
 ]
 ```
 localhost:8000/sample_app/show_vlist에 대한 요청은 views.py의 show_vlist(request)함수에서  처리하도록 urls.py를 작성했다.  
-  
+
 **show_vlist.html작성**  
 show_vlist.html페이지에는 부분적으로 부트스트랩을 적용했다. 추후 부트스트랩을 상속하는 것에 대한 내용을 정리해보도록 해야 할 듯하다. 이번 글에서 이 내용까지 다루기에는 체력이 부족하므로...  
 ```html
@@ -617,28 +617,34 @@ def show_vlist(request):
     video_list = VideoUrl.objects.all()
     msg = {'video_list': video_list}
     return render(request, 'sample_app/show_vlist.html', msg)
-```  
-  
+```
+
 #### 6.2.4) 글 수정 페이지(modify)작성  
 글 수정 페이지에서는 클래스형 뷰를 사용해보기로 했다. 차후 위의 모든 기능들도 클래스형 뷰로 적용할 것이다. 이 글에서는 django에서 웹 개발을 할때 나타나는 여러가지 방식들을 정리해놓고자 기초적인 내용도 담고, 일반적인 않은 것들도 예로 들었다.  
-**sample_app/urls.py**  
-지금까지 작성한 urls.py의 내용은 아래와 같다. urls.py의 내용은 변한 것이 없지만, urls.py의 내용을 확인할때 자꾸 스크롤바를 위아래로 올라갔다가 내려가는 것은 번거로우므로 해당 내용을 이곳에도 옮겨놓았다.  
+
+**get요청에 대한 url처리**  
+
+show_vlist.html에서 아래와 같이 /update에 pk값을 넘겨주는 구문이 있었다.  
+
+```html
+...
+ <a href="{% url 'sample_app:update' vod.vod_id %}" class="btn btn-default" role="button">Edit</a>
+...
+```
+
+이와 같은 표현은 http://127.0.0.1:8000/sample_app/1/update/ 와 같은 형식으로 vod.vod_id라는 인자를 GET요청방식으로 전달하겠다는 표현이다. 이러한 url처리를 해석하는 곳은 urls.py의 urlpatterns내에 있는 아래의 구문이다.
+
 ```python
-from sample_app.views import VideoUrlUpdateView, VideoUpdateView
+from sample_app.views import VideoUrlUpdateView
 ...
 urlpatterns = [
-    url(r'^index/$', views.index, name='index'),
-    url(r'^write/$', views.write, name='write'),
-    url(r'^write_ok/$', views.write_ok, name='write_ok'),
-    url(r'^show_vlist/$', views.show_vlist, name='show_vlist'),
-    # UpdateView 클래스 사용
-    url(r'^(?P<pk>[0-9]+)/update/$', VideoUrlUpdateView.as_view(), name='update'),
-    # View 클래스 이용
-    url(r'^(?P<pk>[0-9]+)/mupdate/$', VideoUpdateView.as_view(), name='mupdate'),
+    ...
+    url(r'^(?P<pk>[0-9]+)/update/$', VideoUrlUpdateView.as_view(), name='update')
 ]
 ```
-자세히 확인해보면 localhost:8000/sample_app/2/update와 같은 url요청이 발생할 경우 VideoUrlUpdateView.as_view()로 제어권이 넘겨지는 것을 확인할 수 있다. 또한 VideoUrlUpdateView라고 views.py에 정의해놓은 클래스를 사용하기 위해 from sample_app.views 에서 VideoUrlUpdateView를 import하는 것을 확인할 수 있다.  
-  
+
+자세히 확인해보면 localhost:8000/sample_app/2/update와 같은 url요청이 발생할 경우 VideoUrlUpdateView.as_view()로 제어권이 넘겨지는 것을 확인할 수 있다. 또한 VideoUrlUpdateView라고 views.py에 정의해놓은 클래스를 사용하기 위해 from sample_app.views 에서 VideoUrlUpdateView를 import하는 것을 확인할 수 있다. urlpatterns에 GET요청에 대한 url 표현식 구현을 완료했으니 해당 url에 대한 view처리구문을 작성해야 한다.   
+
 **views.py**
 UpdateView클래스를 상속받은 VideoUrlUpdateView
 ```python
@@ -656,32 +662,114 @@ class VideoUrlUpdateView(UpdateView):
         # form = VideoForm(instance=vod)
 
         return render(request, self.template_name, {'form' : form})
-
-    def post(self, request, pk, **kwargs):
-        # 참고자료 : http://ruaa.me/django-view/
-        # 구글 검색어 : generic view post
-        form = self.form_class(request.POST)
-
-        # 1) pk값에 해당하는 vod 객체 얻어온다.
-        vod = VideoUrl.objects.get(vod_id = pk)
-
-        # 2) vod객체에 POST로 전달받은 form 값을 저장한다.
-        VideoUrl.objects.filter(pk=pk).update(subject=request.POST['subject'],
-                                              description=request.POST['description'],
-                                              url=request.POST['url'])
-
-        if form.is_valid():
-            return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
-        return render(request, self.template_name, {'form': form})
 ```
+UpdateView를 상속받는 VideoUrlUpdateView클래스를 작성했고, get()메서드를 구현했다. post()메서드 구현까지 완료된 부분은 아래에서 다룰 예정이다.  
+
+- vod = VideoUrl.objects.get(vod_id=pk)  
+
+  ORM API로 pk값에 대해 하나의 데이터를 조회한다. 
+
+-  form = self.form_class(instance=vod)  
+
+  그 결과를 통해 form객체를 생성한다.  
+
+- return render(request, self.template_name, {'form': form})  
+
+  orm api처리가 정상적으로 수행되고, form객체생성도 정상적으로 완료되면 sample_app/videourl_form.html이라는 html파일에 대한 rendering을 요청한다. 이 때 'form'이라는 이름의 데이터인 form을 실어서 django의 템플릿 엔진에 전달해주는데, django의 템플릿 엔진은 html해석과 동시에 데이터의 해석, 템플릿 해석을 수행하여 브라우저에게 해석된 DOM을 전달해준다.  
+
 현재 시중에 나와있는 국내 책은 pk를 사용자정의로 지정해서 사용하는 법, form 객체를 템플릿에게 전달해주는 로직에 대해서 적혀있지 않아서 고생을 좀 했다. UpdateView클래스를 상속받으면, if,else로 GET/POST요청을 분기하도록해서 처리하지 않아도 된다. 이러한 방식을 쓰는 것에 대한 장점은 아직 확실하게는 모른다. 차차 공부해가면서 정리하면 될 듯 하다. (if/else문이 불필요하게 존재하는 것은 공동작업시 유지보수성을 떨어뜨린다는 정도밖에는 모른다...)  
-  
+
+**html페이지 코드**  
+
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title> Modify Content </title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+    <!-- Optional theme -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+</head>
+<body>
+    <div class="container" style="width:400px; padding:15px">
+        <h1> Edit URL Information </h1>
+    </div>
+
+    <div class="container panel panenl-default">
+        <table class="table table-bordered">
+            <thead></thead>
+            <tbody>
+                <form action="." method="post">{% csrf_token %}
+                    {% if form.errors %}
+                        <p class="errornote"> Wrong! Please correct the error(s) below. </p>
+                    {% endif %}
+                    {{ form.as_p }}
+
+                    <input type="hidden" value="{{ form.vod_id }}" class="btn btn-default"/>
+                    <input type="submit" value="submit" class="btn btn-default"/>
+                </form>
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>
+```
+
+위의 코드 중에서 아래의 내용을 자세히 살펴보자  
+
+```html
+<form action="." method="post">{% csrf_token %}
+  {% if form.errors %}
+    <p class="errornote"> Wrong! Please correct the error(s) below. </p>
+  {% endif %}
+  {{ form.as_p }}
+  <input type="hidden" value="{{ form.vod_id }}" class="btn btn-default"/>
+  <input type="submit" value="submit" class="btn btn-default"/>
+</form>
+```
+
+- <form action="." metod="post">  
+
+  views.py에서 전달받은 현재 페이지 (/update)에 post요청을 보내도록 지정  
+
+
+- {{ form.as_p }}  
+
+  views.py의 VideoUrlUpdate클래스의 get()에서 전달받은 form객체를 모두 토해낸다.  
+
+- <input type="hidden" value="{{ form.vod_id }}" class="btn btn-default"/>  
+
+  post요청을 보낼때 전달할 값은 form객체 내의 vod_id다.  
+
+- <input type="submit" value="submit" class="btn btn-default"/>  
+
+  submit 요청을 보내는 버튼  
+
+
+
+**Post 요청에 대한 처리**  
+
+내일 하자 … 흑흑흑… 운동하고나니 공부할 시간이 줄었다 ㅠㅠ 오라클은 언제 공부할거니… 정신바짝차려서 셤 패스하자잉!!    
+
+
+
+   
+
+
+
 **Get 요청처리(글 수정 페이지)**  
 get(self, request, pk)는 localhost:8000/sample_app/show_vlist에서 Edit버튼에 대한 get요청이다. localhost:8000/sample_app/show_vlist에서 Edit버튼 클릭시 pk값을 get요청에 실어서 VideoUrlUpdateView의 get()으로 전달해준다. 그리고 이에 대한 응답으로 VideoUrlUpdateView의 get()메서드에서는  
 - pk값에 대해서 모델데이터(vod)를 얻어오고  
 - 얻어온 모델데이터(vod)를 인자로 하여 VideoForm이 form 객체를 생성하도록 한다.  
 - 이후 얻어낸 form객체 인스턴스를 render()함수를 통해 template를 렌더링한다.  
-  
+
 **Post 요청처리(글 저장 페이지)**  
 
 이 아래부분 지울지 말지 결정!!
