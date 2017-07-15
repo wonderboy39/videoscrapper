@@ -5,7 +5,8 @@ from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect
 from sample_app.models import VideoUrl, VideoCategory
-from .VideoForm import VideoForm
+# from .VideoForm import VideoForm
+from forms import VideoForm
 from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic.edit import UpdateView
 from django.views.generic import View
@@ -121,13 +122,10 @@ class VideoUpdateView(View):
         print('DB >>> vod.subject == ' + vod.subject)
         # form = self.form_class()
         # form = self.form_class(initial= self.initial)
-        return render(request, self.template_name, {'form':vod })
+        return render(request, self.template_name, {'form': vod})
 
     def post(self, request, *args):
         form = self.form_class(request.POST)
         # if form.is_valid():
-        #     print("POST>>>")
-        #     print("show_vlist")
-        #     print("show_vlist")
         #     return HttpResponseRedirect('sample_app:show_vlist')
-        return render(request, self.template_name, {'form':form}) # form이 유효하지 않을때. 에러가 있을경우
+        return render(request, self.template_name, {'form': form}) # form이 유효하지 않을때. 에러가 있을경우
