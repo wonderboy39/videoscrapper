@@ -16,22 +16,30 @@ from pprint import pprint
 
 # Create your views here.
 def index(request):
-    context = {'videourls' : 'helloworld'}
-    return render(request, 'sample_app/index.html', context)
+    template_data = {}
+    return render(request, 'sample_app/index.html', template_data)
 
 
 def write(request):
-    return render(request, 'sample_app/write.html',{'test':'test'} )
+    categories = VideoCategory.objects.all()
+    template_data = {
+        'categories': categories
+    }
+    return render(request, 'sample_app/write.html', template_data)
 
 
 def write_ok(request):
-    m_subject = request.POST['subject']
-    m_url = request.POST['url']
-    m_description = request.POST['description']
+    post = request.POST
+    template_data = {}
+    m_subject = post['subject']
+    m_url = post['url']
+    m_description = post['description']
+    category_id = int(post['cid'].encode('utf-8'))
 
-    v = VideoUrl( subject=m_subject, url=m_url, description=m_description )
+    m_category = VideoCategory.objects.get(pk=category_id)
+    v = VideoUrl(subject=m_subject, url=m_url, description=m_description, category=m_category)
     v.save()
-    return HttpResponseRedirect(reverse('sample_app:show_vlist'), {'test': 'test'})
+    return HttpResponseRedirect(reverse('sample_app:show_vlist'), template_data)
 
 
 def show_vlist(request):
@@ -59,7 +67,7 @@ def modify(request):
         }
 
         # form데이터를 실어서 modify.html로 전송
-        return render(request, 'sample_app/modify.html',ctx)
+        return render(request, 'sample_app/modify.html', ctx)
 
 
 def modify_ok(request):
@@ -113,15 +121,9 @@ class VideoUrlUpdateView(UpdateView):
 class VideoUpdateView(View):
     form_class = VideoForm
     template_name = 'sample_app/videourl_form.html'
-    initial = {'key':'value'}
 
     def get(self, request, pk):
-        print('vodid :: ' + pk)
         vod = VideoUrl.objects.get(vod_id=pk)
-        print('DB >>> pk == ' + pk)
-        print('DB >>> vod.subject == ' + vod.subject)
-        # form = self.form_class()
-        # form = self.form_class(initial= self.initial)
         return render(request, self.template_name, {'form': vod})
 
     def post(self, request, *args):

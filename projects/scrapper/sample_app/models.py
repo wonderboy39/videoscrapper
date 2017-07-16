@@ -14,7 +14,8 @@ class VideoCategory(models.Model):
 
 
 class VideoUrl(models.Model):
-    # category = models.ForeignKey(VideoCategory)
+    category = models.ForeignKey(VideoCategory, verbose_name=u"카테고리",
+                                 on_delete=models.CASCADE, default=None)
     vod_id = models.AutoField(primary_key=True)
     subject = models.CharField(max_length=50)
     url = models.CharField(max_length=100)
