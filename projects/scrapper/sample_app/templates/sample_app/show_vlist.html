@@ -46,7 +46,10 @@
                         <h3> {{ vod.subject }} </h3>
                         <p> {{ vod.description }} </p>
                         <p>
-                            <a href="{% url 'sample_app:update' vod.vod_id %}" class="btn btn-default" role="button">Edit</a>
+                            <!-- 카테고리 사용하지 않는 페이지 URL -->
+{#                            <a href="{% url 'sample_app:update' vod.vod_id %}" class="btn btn-default" role="button">Edit</a>#}
+                            <!-- 카테고리 사용하는 수정 페이지 URL -->
+                            <a href="{% url 'sample_app:edit' vod.vod_id %}" class="btn btn-default" role="button">Edit</a>
                         </p>
                     </div>
                 </div>
@@ -54,5 +57,4 @@
         </div>
     </div>
  </body>
- {# modify하는 html로 넘어가는 버튼 기능 구현, url설계, modify()함수를 views.py에 구현 #}
 </html>

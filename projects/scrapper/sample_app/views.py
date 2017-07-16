@@ -1,9 +1,12 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
+from django.http.response import Http404
 from django.shortcuts import render
 from django.urls import reverse
 from django.http import HttpResponseRedirect
+
+from sample_app.forms import VideoMetaForm
 from sample_app.models import VideoUrl, VideoCategory
 # from .VideoForm import VideoForm
 from forms import VideoForm
@@ -84,6 +87,38 @@ def modify_ok(request):
     return render(request, 'sample_app/show_vlist.html')
 
 
+class VideoUrlCategoryUpdateView(UpdateView):
+    form_class = VideoForm
+    template_name = 'sample_app/edit.html'
+
+    def get(self, request, pk):
+        vod = VideoUrl.objects.get(vod_id=pk)
+        template_data = {
+            'categories': VideoCategory.objects.all(),
+            'selected': vod.category,
+            'vod_id': vod.vod_id,
+            'subject': vod.subject,
+            'url': vod.url,
+            'description': vod.description
+        }
+
+        return render(request, self.template_name, template_data)
+
+    def post(self, request, **kwargs):
+        post = request.POST.copy()
+
+        category = VideoCategory.objects.get(pk=post['category'])
+        video = VideoUrl.objects.get(pk=int(post['vod_id']))
+        video.category = category
+
+        form = VideoMetaForm(post, instance=video)
+        if form.is_valid():
+            form.save()
+            return HttpResponseRedirect(reverse('sample_app:show_vlist'), {})
+        else:
+            raise Http404
+
+
 # UpdateView 클래스 상속받아 사용하는 방식 ( UpdateView : Form을 자동적으로 사용하는 클래스 )
 class VideoUrlUpdateView(UpdateView):
     form_class = VideoForm
@@ -97,7 +132,7 @@ class VideoUrlUpdateView(UpdateView):
         # 직접 생성자를 사용해도 된다
         # form = VideoForm(instance=vod)
 
-        return render(request, self.template_name, {'form' : form})
+        return render(request, self.template_name, {'form': form})
 
     def post(self, request, pk, **kwargs):
         # 참고자료 : http://ruaa.me/django-view/
