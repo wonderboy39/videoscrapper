@@ -5,7 +5,7 @@ from sample_app.views import VideoUrlUpdateView, VideoUpdateView, VideoUrlCatego
 
 #app_name = 'sample_app'
 urlpatterns = [
-    url(r'^index/$', views.index, name='index'),
+    url(r'^/$', views.index, name='index'),
     url(r'^write/$', views.write, name='write'),
     url(r'^write_ok/$', views.write_ok, name='write_ok'),
     url(r'^show_vlist/$', views.show_vlist, name='show_vlist'),
